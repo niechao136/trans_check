@@ -21,11 +21,11 @@ for row in ws.iter_rows(min_row=2, values_only=True):
     row_dict = dict(zip(headers, row))
     original = row_dict["zh-TW"].strip()
     translation_map[original] = {
-        "zh-TW": str(row_dict.get("zh-TW", "")).strip(),
-        "zh-CN": str(row_dict.get("zh-CN", "")).strip(),
-        "en-US": str(row_dict.get("en-US", "")).strip(),
-        "ja-JP": str(row_dict.get("ja-JP", "")).strip(),
-        "ko-KR": str(row_dict.get("ko-KR", "")).strip(),
+        "zh-TW": str(row_dict.get("zh-TW") or "").strip(),
+        "zh-CN": str(row_dict.get("zh-CN") or "").strip(),
+        "en-US": str(row_dict.get("en-US") or "").strip(),
+        "ja-JP": str(row_dict.get("ja-JP") or "").strip(),
+        "ko-KR": str(row_dict.get("ko-KR") or "").strip(),
     }
 
 # 输入结构
