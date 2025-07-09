@@ -1,23 +1,32 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import pandas as pd
+from openpyxl import load_workbook
 
 # 初始化 FastAPI 应用
 app = FastAPI()
 
 # 读取 Excel 文件并构建翻译字典
 excel_file = "i18n_RAG.xlsx"
-df = pd.read_excel(excel_file)  # 自动识别列头
-translation_map = {
-    row["zh-TW"]: {
-        "zh-TW": str(row.get("zh-TW", "")).strip(),
-        "zh-CN": str(row.get("zh-CN", "")).strip(),
-        "en-US": str(row.get("en-US", "")).strip(),
-        "ja-JP": str(row.get("ja-JP", "")).strip(),
-        "ko-KR": str(row.get("ko-KR", "")).strip()
+translation_map = {}
+
+wb = load_workbook(excel_file)
+ws = wb.active
+
+# 获取表头
+headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+
+for row in ws.iter_rows(min_row=2, values_only=True):
+    if not row[0]:
+        continue
+    row_dict = dict(zip(headers, row))
+    original = row_dict["zh-TW"].strip()
+    translation_map[original] = {
+        "zh-TW": str(row_dict.get("zh-TW", "")).strip(),
+        "zh-CN": str(row_dict.get("zh-CN", "")).strip(),
+        "en-US": str(row_dict.get("en-US", "")).strip(),
+        "ja-JP": str(row_dict.get("ja-JP", "")).strip(),
+        "ko-KR": str(row_dict.get("ko-KR", "")).strip(),
     }
-    for _, row in df.iterrows()
-}
 
 # 输入结构
 class LookupRequest(BaseModel):
